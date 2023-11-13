@@ -5,61 +5,84 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simple Video Chat</title>
   <style>
-    #localVideo, #remoteVideo {
-      width: 50%;
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f5f5f5;
+      text-align: center;
+      margin: 20px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    video {
+      width: 45%;
       border: 1px solid #ccc;
+      margin: 10px;
+      border-radius: 8px;
+      background-color: white;
     }
   </style>
 </head>
 <body>
-  <h1>Simple Video Chat</h1>
+  <h1>SPEEDBALLS💺💯☠️☢️👌🥶🔥🗿💀💧⚠️🧢</h1>
   
   <video id="localVideo" autoplay muted></video>
   <video id="remoteVideo" autoplay></video>
-  
+
   <script>
+    const localVideo = document.getElementById('localVideo');
+    const remoteVideo = document.getElementById('remoteVideo');
+    
+    let localStream;
+    let peerConnection;
+
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       .then((stream) => {
-        const localVideo = document.getElementById('localVideo');
+        localStream = stream;
         localVideo.srcObject = stream;
 
-        const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-        const peerConnection = new RTCPeerConnection(configuration);
+        // Create a peer connection
+        createPeerConnection();
 
-        stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
-
+        // Offer creation
         peerConnection.createOffer()
           .then(offer => peerConnection.setLocalDescription(offer))
           .then(() => {
-            // You would send the offer to the other user via a signaling server.
-            // For simplicity, we'll assume the other user receives the offer and sets it as the remote description.
-            // In a real application, you would use a signaling server to exchange the offer and answer between users.
-            // See https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Signaling_and_video_calling for more details.
-            return new Promise(resolve => setTimeout(() => resolve(), 2000)); // Simulating a delay for the sake of simplicity.
-          })
-          .then(() => {
-            // Simulating the other user receiving the offer and setting it as the remote description.
+            // Simulate the other user receiving the offer and setting it as the remote description
             const remoteOffer = peerConnection.localDescription;
             return new Promise(resolve => setTimeout(() => resolve(remoteOffer), 2000));
           })
           .then(remoteOffer => peerConnection.setRemoteDescription(remoteOffer))
-          .then(() => peerConnection.createAnswer())
-          .then(answer => peerConnection.setLocalDescription(answer))
-          .then(() => {
-            // Simulating the other user receiving the answer and setting it as the remote description.
-            const remoteAnswer = peerConnection.localDescription;
-            return new Promise(resolve => setTimeout(() => resolve(remoteAnswer), 2000));
-          })
-          .then(remoteAnswer => peerConnection.setRemoteDescription(remoteAnswer))
           .catch(error => console.error('Error creating or setting up peer connection:', error));
-
-        peerConnection.ontrack = (event) => {
-          const remoteVideo = document.getElementById('remoteVideo');
-          remoteVideo.srcObject = event.streams[0];
-        };
       })
       .catch(error => console.error('Error accessing media devices:', error));
+
+    // Function to create a peer connection
+    function createPeerConnection() {
+      const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+      peerConnection = new RTCPeerConnection(configuration);
+
+      // Add local stream to peer connection
+      localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+      // Handle remote tracks
+      peerConnection.ontrack = (event) => {
+        remoteVideo.srcObject = event.streams[0];
+      };
+
+      // Handle ICE candidate events
+      peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+          // Simulate the other user receiving the ICE candidate and adding it
+          const remoteCandidate = event.candidate;
+          return new Promise(resolve => setTimeout(() => resolve(remoteCandidate), 2000))
+            .then(remoteCandidate => peerConnection.addIceCandidate(remoteCandidate))
+            .catch(error => console.error('Error handling remote ICE candidate:', error));
+        }
+      };
+    }
   </script>
 </body>
 </html>
-
