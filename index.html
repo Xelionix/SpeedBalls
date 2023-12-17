@@ -1,88 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple Video Chat</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f5f5f5;
-      text-align: center;
-      margin: 20px;
-    }
-
-    h1 {
-      color: #333;
-    }
-
-    video {
-      width: 45%;
-      border: 1px solid #ccc;
-      margin: 10px;
-      border-radius: 8px;
-      background-color: white;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruffle Flash Content</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body>
-  <h1>SPEEDBALLS💺💯☠️☢️👌🥶🔥🗿💀💧⚠️🧢</h1>
-  
-  <video id="localVideo" autoplay muted></video>
-  <video id="remoteVideo" autoplay></video>
+    <script type="module">
+        import 'https://cdn.jsdelivr.net/npm/ruffle-web@5/dist/ruffle.js';
 
-  <script>
-    const localVideo = document.getElementById('localVideo');
-    const remoteVideo = document.getElementById('remoteVideo');
-    
-    let localStream;
-    let peerConnection;
+        document.addEventListener('DOMContentLoaded', () => {
+            const ruffleContainer = document.createElement('div');
+            ruffleContainer.style.width = '100%';
+            ruffleContainer.style.height = '100%';
 
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      .then((stream) => {
-        localStream = stream;
-        localVideo.srcObject = stream;
+            // Replace the URL below with the URL of your Flash content
+            ruffleContainer.setAttribute('data-content', 'https://frizby.live/lesson-detail/lesson-17.html');
 
-        // Create a peer connection
-        createPeerConnection();
-
-        // Offer creation
-        peerConnection.createOffer()
-          .then(offer => peerConnection.setLocalDescription(offer))
-          .then(() => {
-            // Simulate the other user receiving the offer and setting it as the remote description
-            const remoteOffer = peerConnection.localDescription;
-            return new Promise(resolve => setTimeout(() => resolve(remoteOffer), 2000));
-          })
-          .then(remoteOffer => peerConnection.setRemoteDescription(remoteOffer))
-          .catch(error => console.error('Error creating or setting up peer connection:', error));
-      })
-      .catch(error => console.error('Error accessing media devices:', error));
-
-    // Function to create a peer connection
-    function createPeerConnection() {
-      const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-      peerConnection = new RTCPeerConnection(configuration);
-
-      // Add local stream to peer connection
-      localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-
-      // Handle remote tracks
-      peerConnection.ontrack = (event) => {
-        remoteVideo.srcObject = event.streams[0];
-      };
-
-      // Handle ICE candidate events
-      peerConnection.onicecandidate = (event) => {
-        if (event.candidate) {
-          // Simulate the other user receiving the ICE candidate and adding it
-          const remoteCandidate = event.candidate;
-          return new Promise(resolve => setTimeout(() => resolve(remoteCandidate), 2000))
-            .then(remoteCandidate => peerConnection.addIceCandidate(remoteCandidate))
-            .catch(error => console.error('Error handling remote ICE candidate:', error));
-        }
-      };
-    }
-  </script>
+            document.body.appendChild(ruffleContainer);
+        });
+    </script>
 </body>
 </html>
